@@ -1,0 +1,110 @@
+---
+title: "Spectral Plotting"
+output: html_notebook
+---
+
+```{r}
+# load packages
+require(tidyverse)
+require(lubridate)
+require(ggplot2)
+require(sharpshootR)
+require(CDECRetrieve)
+require(sharpshootR)
+require(ggthemes)
+
+```
+
+```{r}
+mySpectra <- read_csv("C:\\Users\\cade\\Documents\\HelpingOthers\\Erin\\ErinRCode\\Project\\spectraErin2.csv") %>%
+  mutate(Wavelength = as.numeric(Wavelength)) %>%
+  na.omit()
+```
+
+```{r}
+blueDepth <- mySpectra %>% ggplot(aes(x = Wavelength, y= Blue_depth_water)) +
+ geom_smooth(span = 0.03,se=FALSE, col = "dodgerblue4") + 
+  geom_smooth(span = 0.03, se= FALSE, aes(x = Wavelength, y= TSM_CHL)) +
+  ylab("") + xlab("") + 
+  scale_y_continuous(breaks = seq(0.00, 0.14, 0.02))
+  
+  theme(axis.text.x = element_text(color = "black",
+                           size=12), # was 8
+          axis.text.y = element_text( color = "black",
+                           size=12)) + theme_classic()
+blueDepth + scale_y_continuous(breaks = seq(0.00, 0.14, 0.02))
+
+ChlA <- mySpectra %>% ggplot(aes(x = Wavelength, y= `Chlorophyll-a`)) +
+ geom_smooth(span = 0.03,se=FALSE, col = "darkgreen") +  
+  scale_y_continuous(limits = c(0,0.14)) + 
+  ylab("") + xlab("") +
+  theme(axis.text.x = element_text(color = "black",
+                           size=12), # was 8
+          axis.text.y = element_text( color = "black",
+                           size=12))  + theme_classic()
+                          
+ChlA
+
+phyCyanin <- mySpectra %>% ggplot(aes(x = Wavelength, y= phycocyanin )) +
+ geom_smooth(span = 0.03,se=FALSE, col = "cyan") + ylab("") + xlab("") +   theme(axis.text.x = element_text(color = "black",
+                           size=12), # was 8
+          axis.text.y = element_text( color = "black",
+                           size=12)) + scale_y_continuous(breaks = seq(0.00, 0.14, 0.02)) + theme_classic()
+phyCyanin
+
+phyCoery <- mySpectra %>% ggplot(aes(x = Wavelength, y= phycoerythrin )) +
+  geom_smooth(span = 0.03,se=FALSE, col = "blue") + ylab("") + xlab("") +
+  theme(axis.text.x = element_text(color = "black",
+                           size=12), # was 8
+          axis.text.y = element_text( color = "black",
+                           size=12)) + scale_y_continuous(limits = c(0.00,0.14)) + theme_classic()
+
+phyCoery
+
+tsm <- mySpectra %>% ggplot(aes(x = Wavelength, y= TSM_CHL)) +
+ geom_smooth(span = 0.03,se=FALSE, col = "brown", size = 1) + 
+  geom_smooth(span = 0.03, se=FALSE, col = "aquamarine3", size=1, aes(x = Wavelength, y= `Chlorophyll-a`)) + 
+  ylab("") + xlab("")  +
+  theme_classic() +
+  theme(axis.text.x = element_text(color = "black",
+                           size=14), # was 8
+          axis.text.y = element_text( color = "black",
+                           size=14)) #+ scale_y_continuous(breaks = seq(0.00, 0.14, 0.02)) 
+tsm
+
+
+```
+
+```{r}
+Secplot <- mySpectra %>% ggplot(aes(x = Wavelength, y= TSM_CHL)) +
+ geom_smooth(span = 0.03,se=FALSE, col = "white", size = 1) + 
+  geom_smooth(span = 0.03, se=FALSE, col = "deepskyblue3", size=1, aes(x = Wavelength, y= phycocyanin)) + 
+  geom_smooth(span = 0.03, se=FALSE, col = "mediumblue", size=1, aes(x = Wavelength, y= phycoerythrin)) +
+  ylab("") + xlab("")  +
+  theme_classic() +
+  theme(axis.text.x = element_text(color = "black",
+                           size=14), # was 8
+          axis.text.y = element_text( color = "black",
+                           size=14)) #+ scale_y_continuous(breaks = seq(0.00, 0.14, 0.02)) 
+Secplot
+
+
+```
+
+
+```{r}
+mySpectraPlots <- read_csv("C:\\Users\\cade\\Documents\\HelpingOthers\\Erin\\ErinRCode\\Project\\spectraErin2.csv") %>%
+  mutate(Wavelength = as.numeric(Wavelength)) %>%
+  na.omit() %>% 
+  gather(class, reflectance, -Wavelength) %>%
+  group_by(class) %>%
+  do( plots = ggplot(data = .,aes(y= reflectance, x = Wavelength)) +
+        geom_smooth(span = 0.4,se=FALSE) + ggtitle(.$class) + theme_classic())
+
+
+```
+
+```{r}
+
+```
+
